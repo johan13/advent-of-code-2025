@@ -1,6 +1,9 @@
-.PHONY: all $(wildcard day*/)
+.PHONY: all clean $(wildcard day*/)
 
 all: $(wildcard day*/)
 
 $(wildcard day*/):
-	@$(MAKE) -C $@
+	$(MAKE) -C $@
+
+clean:
+	git clean -fX

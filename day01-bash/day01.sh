@@ -7,7 +7,7 @@ part1() {
         local count="${line:1}"
         [[ "$direction" == L ]] && ((count = -count))
         ((pos = ((pos + count) % 100 + 100) % 100))
-        ((pos == 0 )) && ((zeros++))
+        ((pos == 0)) && ((zeros++))
     done
     echo "$zeros"
 }
