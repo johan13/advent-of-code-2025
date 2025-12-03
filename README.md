@@ -15,7 +15,7 @@ make 2> /dev/null | grep --color=never "^Day "
 
 * ~~Bash~~
 * ~~Zig~~
-* C
+* ~~C~~
 * Go
 * Python
 * F#
