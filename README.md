@@ -17,9 +17,9 @@ make 2> /dev/null | grep --color=never "^Day "
 * ~~Zig~~
 * ~~C~~
 * ~~Go~~
+* ~~Swift~~
 * Python
 * F#
-* Java
 * Kotlin
 * Haskell
 * C++
@@ -27,8 +27,8 @@ make 2> /dev/null | grep --color=never "^Day "
 * Typescript
 ---
 * Rust
+* Java
 * Matlab/Octave
-* Swift
 * Objective C
 * T-SQL
 * PL/pgSQL
@@ -36,3 +36,4 @@ make 2> /dev/null | grep --color=never "^Day "
 * Scala
 * Assembly
 * Elixir
+* Clojure
