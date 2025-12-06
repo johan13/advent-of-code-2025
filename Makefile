@@ -6,4 +6,4 @@ $(wildcard day*/):
 	$(MAKE) -C $@
 
 clean:
-	git clean -fX
+	@git clean -fdX

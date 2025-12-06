@@ -19,7 +19,7 @@ make 2> /dev/null | grep --color=never "^Day "
 * ~~Go~~
 * ~~Swift~~
 * ~~Python~~
-* F#
+* ~~F#~~
 * Kotlin
 * Haskell
 * C++
