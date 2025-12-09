@@ -21,7 +21,7 @@ make 2> /dev/null | grep --color=never "^Day "
 * ~~Python~~
 * ~~F#~~
 * ~~Kotlin~~
-* Haskell
+* ~~Haskell~~
 * C++
 * C#
 * Typescript
