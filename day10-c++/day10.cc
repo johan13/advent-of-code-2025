@@ -1,7 +1,10 @@
 #include <charconv>
+#include <cstdint>
+#include <deque>
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 static std::vector<int> parse_ints(std::string_view s) {
@@ -43,6 +46,51 @@ struct Machine {
     }
 };
 
+static int button_presses_to_turn_on(const Machine &machine) {
+    uint16_t target_pattern = 0;
+    for (size_t i = 0; i < machine.lights.size(); ++i) {
+        if (machine.lights[i]) target_pattern |= 1 << i;
+    }
+
+    std::vector<uint16_t> buttons;
+    for (auto indices : machine.buttons) {
+        uint16_t button = 0;
+        for (int i : indices) button |= 1 << i;
+        buttons.push_back(button);
+    }
+
+    // Start from the target pattern and look for all lights off instead of the other way around.
+    std::deque<std::tuple<uint16_t, int>> queue;
+    queue.push_back(std::make_tuple(target_pattern, 0));
+    for (;;) {
+        auto [pattern, count] = queue.front();
+        queue.pop_front();
+        count++;
+        for (uint16_t bit_flips : buttons) {
+            uint16_t new_pattern = pattern ^ bit_flips;
+            if (new_pattern == 0)
+                return count;
+            else
+                queue.push_back(std::make_tuple(new_pattern, count));
+        }
+    }
+}
+
+static int button_presses_for_correct_joltage(const Machine &machine) {
+    int len = machine.joltages.size();
+    // Start from the target pattern and look for all lights off instead of the other way around.
+    std::deque<std::tuple<std::vector<int>, int>> queue;
+    queue.push_back(std::make_tuple(std::vector<int>(len), 0));
+    for (;;) {
+        auto [joltages, count] = queue.front();
+        queue.pop_front();
+        count++;
+        for (auto button : machine.buttons) {
+            // TODO
+        }
+    }
+}
+
 int main() {
     std::vector<Machine> machines;
     std::string line;
@@ -51,5 +99,12 @@ int main() {
         machines.emplace_back(line);
     }
 
-    std::cout << machines.size() << std::endl;
+    int answer1 = 0, answer2 = 0;
+    for (auto m : machines) {
+        answer1 += button_presses_to_turn_on(m);
+        answer2 += button_presses_for_correct_joltage(m);
+    }
+
+    std::cout << "Day 10 part 1: " << answer1 << std::endl; // 411
+    std::cout << "Day 10 part 2: " << answer2 << std::endl;
 }
