@@ -89,6 +89,84 @@ static int button_presses_to_turn_on(const Machine &machine) {
     }
 }
 
+// static int button_presses_for_correct_joltage(const Machine &machine) {
+//     auto cmp = [](const auto &a, const auto &b) {
+//         // Compare count (3rd element) first, then joltage sum (2nd element) to break ties
+//         int count_a = std::get<2>(a);
+//         int count_b = std::get<2>(b);
+//         if (count_a != count_b) return count_a > count_b; // Lower count has higher priority
+//         return std::get<1>(a) < std::get<1>(b); // Greater joltage_sum has higher priority
+//     };
+//     std::priority_queue<std::tuple<std::vector<int>, int, int>, // joltages, joltage_sum, count
+//                         std::vector<std::tuple<std::vector<int>, int, int>>,
+//                         decltype(cmp)> queue(cmp);
+
+//     int num_joltages = machine.joltages.size();
+//     queue.push(std::make_tuple(std::vector<int>(num_joltages), 0, 0));
+//     for (;;) {
+//         auto [joltages, joltage_sum, count] = queue.top();
+//         // std::cout << "Pop: joltages=" << joltages << " joltage_sum=" << joltage_sum << " count=" << count << std::endl;
+//         queue.pop();
+//         count++;
+//         for (auto button : machine.buttons) {
+//             for (int i : button) joltages[i]++;
+
+//             // Check if we are there and if we have overshot the target.
+//             bool all_equal = true;
+//             bool all_less_or_equal = true;
+//             for (int i = 0; i < num_joltages; ++i) {
+//                 if (joltages[i] != machine.joltages[i]) all_equal = false;
+//                 if (joltages[i] > machine.joltages[i]) all_less_or_equal = false;
+//             }
+//             if (all_equal) return count;
+//             if (all_less_or_equal)
+//                 queue.push(std::make_tuple(joltages, joltage_sum + button.size(), count));
+
+//             // Undo the button press for next iteration
+//             for (int i : button) joltages[i]--;
+//         }
+//     }
+// }
+
+static int button_presses_for_correct_joltage(const Machine &machine) {
+    int best = std::numeric_limits<int>::max();
+    std::function<void(const std::vector<int>&, int)> solve = [&](const std::vector<int> &remaining, int count) {
+        // std::cout << "---\n";
+        if (count >= best) return;
+        // std::cout << "remaining=" << remaining << " count=" << count << std::endl;
+
+        if (remaining == std::vector<int>(remaining.size())) {
+            // std::cout << "found " << count << (count < best ? " best" :"") << std::endl;
+            if (count < best) best = count;
+            return;
+        }
+
+        // Create a vector of (button_indices, lower_bound) and sort by ascending lower bound.
+        std::vector<std::pair<std::vector<int>, int>> buttons_with_upper_bound;
+        for (const auto& button : machine.buttons) {
+            int upper_bound = std::numeric_limits<int>::max();
+            for (int b : button)  upper_bound = std::min(upper_bound, remaining[b]);
+            buttons_with_upper_bound.push_back({ button, upper_bound });
+        }
+
+        std::sort(buttons_with_upper_bound.begin(), buttons_with_upper_bound.end(),
+                  [](const auto& a, const auto& b) { return a.second < b.second; });
+
+        for (const auto& [button, upper_bound] : buttons_with_upper_bound) {
+            // std::cout << "button=" << button << " upper_bound=" << upper_bound << std::endl;
+            for (int i = upper_bound; i > 0; i--) {
+                std::vector<int> new_remaining = remaining;
+                for (int b : button) new_remaining[b] -= i;
+                solve(new_remaining, count + i);
+            }
+        }
+    };
+
+    solve(machine.joltages, 0);
+    // std::cout << "best=" << best << std::endl;
+    return best;
+}
+
 int main() {
     std::vector<Machine> machines;
     std::string line;
@@ -97,10 +175,13 @@ int main() {
         machines.emplace_back(line);
     }
 
-    int answer1 = 0;
+    int answer1 = 0, answer2 = 0;
     for (auto m : machines) {
+        std::cout << m.buttons.size() << " buttons, " << m.joltages.size() << " joltages" << std::endl;
         answer1 += button_presses_to_turn_on(m);
+        answer2 += button_presses_for_correct_joltage(m);
     }
 
     std::cout << "Day 10 part 1: " << answer1 << std::endl; // 411
+    std::cout << "Day 10 part 2: " << answer2 << std::endl;
 }

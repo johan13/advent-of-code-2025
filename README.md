@@ -28,7 +28,7 @@ make 2> /dev/null | grep --color=never "^Day "
 ---
 * Rust
 * Java
-* ~~Matlab/Octave~~ (Temporarily used for day 10 part 2)
+* Matlab/Octave
 * Objective C
 * T-SQL
 * PL/pgSQL
