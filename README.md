@@ -22,13 +22,13 @@ make 2> /dev/null | grep --color=never "^Day "
 * ~~F#~~
 * ~~Kotlin~~
 * ~~Haskell~~
-* C++
+* ~~C++~~
 * C#
 * Typescript
 ---
 * Rust
 * Java
-* Matlab/Octave
+* ~~Matlab/Octave~~ (Temporarily used for day 10 part 2)
 * Objective C
 * T-SQL
 * PL/pgSQL
